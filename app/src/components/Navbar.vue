@@ -26,7 +26,7 @@ const openCart = () => {
 
         <div class="hidden md:flex flex-1 justify-center">
           <div class="flex items-baseline space-x-8">
-            <router-link to="/accueil"
+            <router-link to="/"
               class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
               active-class="text-green-600 bg-green-50">
               Accueil
@@ -68,7 +68,7 @@ const openCart = () => {
 
     <div :class="{ 'block': mobileMenuOpen, 'hidden': !mobileMenuOpen }" class="md:hidden">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
-        <router-link to="/accueil" @click="closeMobileMenu"
+        <router-link to="/" @click="closeMobileMenu"
           class="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
           active-class="text-green-600 bg-green-50">
           Accueil
