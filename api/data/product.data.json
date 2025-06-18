@@ -1,0 +1,66 @@
+[
+  {
+    "id": 1,
+    "name": "Classic Burger",
+    "price": 8.99,
+    "category": "burgers",
+    "image": "classic-burger.jpg",
+    "description": "Notre burger classique avec steak haché, tomate, salade et sauce maison"
+  },
+  {
+    "id": 2,
+    "name": "Cheese Burger",
+    "price": 9.99,
+    "category": "burgers",
+    "image": "cheese-burger.jpg",
+    "description": "Burger avec fromage fondant, steak haché, tomate, oignons et sauce spéciale"
+  },
+  {
+    "id": 5,
+    "name": "Frites",
+    "price": 3.99,
+    "category": "sides",
+    "image": "fries.jpg",
+    "description": "Frites croustillantes et dorées"
+  },
+  {
+    "id": 6,
+    "name": "Onion Rings",
+    "price": 4.99,
+    "category": "sides",
+    "image": "onion-rings.jpg",
+    "description": "Rondelles d'oignons panées"
+  },
+  {
+    "id": 7,
+    "name": "Coca-Cola",
+    "price": 2.99,
+    "category": "boissons",
+    "image": "coca.jpg",
+    "description": "Coca-Cola bien frais"
+  },
+  {
+    "id": 8,
+    "name": "Ice Tea",
+    "price": 2.99,
+    "category": "boissons",
+    "image": "ice-tea.jpg",
+    "description": "Ice Tea pêche rafraîchissant"
+  },
+  {
+    "id": 9,
+    "name": "Brownie",
+    "price": 4.99,
+    "category": "desserts",
+    "image": "brownie.jpg",
+    "description": "Brownie au chocolat avec noix"
+  },
+  {
+    "id": 10,
+    "name": "Sundae",
+    "price": 5.99,
+    "category": "desserts",
+    "image": "sundae.jpg",
+    "description": "Glace vanille avec sauce chocolat ou caramel"
+  }
+]
