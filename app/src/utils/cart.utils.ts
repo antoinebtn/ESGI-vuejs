@@ -1,12 +1,12 @@
 import store from '../store/index'
+import router from '@/router'
 
 const clearCart = () => {
   store.mutations.clearCart()
 }
 
-const proceedToCheckout = (cartPrice: number) => {
-  console.log('Procéder au checkout avec:', cartPrice)
-  alert('Fonctionnalité de commande en cours de développement!')
+const proceedToCheckout = () => {
+  router.push({ path: '/payment' })
 }
 
 export default {

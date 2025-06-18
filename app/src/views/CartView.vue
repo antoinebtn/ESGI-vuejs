@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Plus, Minus, Trash2, ShoppingBag } from 'lucide-vue-next'
-import UserNameModal from '../components/UserNameModal.vue'
 import store from '../store'
 import {
   incrementQuantity,
@@ -13,7 +12,7 @@ import {
   proceedToCheckout
 } from '../utils/cart.utils'
 
-const hasUserName = computed(() => store.getters.hasUserName())
+
 const userName = computed(() => store.getters.getUserName())
 const cart = computed(() => store.getters.getCart())
 const cartTotal = computed(() => store.getters.getCartTotal())
@@ -22,11 +21,10 @@ const cartItemCount = computed(() => store.getters.getCartItemCount())
 
 <template>
   <main class="container mx-auto px-4 py-8 pt-24 min-h-screen">
-    <UserNameModal v-if="!hasUserName" />
 
     <section class="mb-8">
       <h1 class="text-4xl font-bold text-center mb-6">
-        {{ hasUserName ? `Votre panier, ${userName}` : 'Votre panier' }}
+        {{ `Votre panier, ${userName}`}}
       </h1>
     </section>
 
@@ -118,7 +116,7 @@ const cartItemCount = computed(() => store.getters.getCartItemCount())
             class="flex-1 px-6 py-3 bg-gray-200 text-gray-800 text-center rounded-lg hover:bg-gray-300 transition-colors duration-200">
             Continuer mes achats
           </router-link>
-          <button @click="proceedToCheckout(cartTotal)"
+          <button @click="proceedToCheckout()"
             class="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
             Commander ({{ cartTotal.toFixed(2) }} €)
           </button>

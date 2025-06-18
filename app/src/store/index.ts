@@ -1,9 +1,5 @@
 import { reactive, readonly } from 'vue'
 
-interface User {
-  userName: string | null
-}
-
 interface CartItem {
   id: number
   name: string
@@ -35,6 +31,12 @@ const getters = {
 const mutations = {
   setUserName(name: string) {
     store.userName = name
+    localStorage.setItem('userName', name)
+  },
+
+  logoutUser() {
+    store.userName = null
+    localStorage.removeItem('userName')
   },
   addToCart(product: Omit<CartItem, 'quantity'>) {
     const existingItem = store.cart.find((item) => item.id === product.id)
@@ -72,6 +74,13 @@ const mutations = {
         console.error('Erreur lors du chargement du panier depuis localStorage:', error)
         store.cart = []
       }
+    }
+  },
+
+  loadUserFromStorage() {
+    const savedUserName = localStorage.getItem('userName')
+    if (savedUserName) {
+      store.userName = savedUserName
     }
   },
   clearCart() {
