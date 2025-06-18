@@ -18,7 +18,7 @@ const closeMobileMenu = () => {
       <div class="flex items-center justify-between h-16">
         <div class="flex items-center">
           <img :src="logoUrl" alt="Logo" class="h-10 w-10 mr-3">
-          <router-link to="home"
+          <router-link :to="{ name: 'home' }"
             class="text-gray-700  px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
             active-class="text-green-600 bg-green-50">
             <span class="font-bold text-xl hover:text-green-600 text-gray-800">Bun Appetit</span>
@@ -27,7 +27,7 @@ const closeMobileMenu = () => {
 
         <div class="hidden md:flex flex-1 justify-center">
           <div class="flex items-baseline space-x-8">
-            <router-link to="products"
+            <router-link :to="{ name: 'products' }"
               class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
               active-class="text-green-600 bg-green-50">
               Menu
@@ -37,7 +37,7 @@ const closeMobileMenu = () => {
 
         <div class="flex items-center space-x-4">
           <div class="relative">
-            <router-link to="/cart"
+            <router-link :to="{ name: 'cart' }"
               class="text-gray-700 hover:text-green-600 p-2 rounded-md transition-colors duration-200 block"
               active-class="text-green-600">
               <ShoppingCart />
@@ -65,17 +65,17 @@ const closeMobileMenu = () => {
 
     <div :class="{ 'block': mobileMenuOpen, 'hidden': !mobileMenuOpen }" class="md:hidden">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
-        <router-link to="/" @click="closeMobileMenu"
+        <router-link :to="{ name: 'home' }" @click="closeMobileMenu"
           class="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
           active-class="text-green-600 bg-green-50">
           Accueil
         </router-link>
-        <router-link to="/Products" @click="closeMobileMenu"
+        <router-link :to="{ name: 'products' }" @click="closeMobileMenu"
           class="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
           active-class="text-green-600 bg-green-50">
           Products
         </router-link>
-        <router-link to="/cart" @click="closeMobileMenu"
+        <router-link :to="{ name: 'cart' }" @click="closeMobileMenu"
           class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 flex items-center"
           active-class="text-green-600 bg-green-50">
           <ShoppingCart class="mr-2" />
