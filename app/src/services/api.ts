@@ -45,3 +45,5 @@ class ApiService {
     return this.request<T>(endpoint, { method: 'GET' })
   }
 }
+
+export default ApiService

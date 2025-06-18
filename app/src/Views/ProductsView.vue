@@ -4,6 +4,11 @@ import { Plus, Minus, Trash2 } from 'lucide-vue-next'
 import UserNameModal from '../components/UserNameModal.vue'
 import store from '../store'
 
+import ApiService from '../services/api'
+
+const apiService = new ApiService()
+
+
 const hasUserName = computed(() => store.getters.hasUserName())
 const userName = computed(() => store.getters.getUserName())
 
@@ -14,16 +19,16 @@ const categories = ref([
   { id: 5, name: 'Desserts', slug: 'desserts' }
 ])
 
-const products = ref([
-  { id: 1, name: 'Classic Burger', price: 8.99, category: 'burgers', image: 'classic-burger.jpg', description: 'Notre burger classique avec steak haché, tomate, salade et sauce maison' },
-  { id: 2, name: 'Cheese Burger', price: 9.99, category: 'burgers', image: 'cheese-burger.jpg', description: 'Burger avec fromage fondant, steak haché, tomate, oignons et sauce spéciale' },
-  { id: 5, name: 'Frites', price: 3.99, category: 'sides', image: 'fries.jpg', description: 'Frites croustillantes et dorées' },
-  { id: 6, name: 'Onion Rings', price: 4.99, category: 'sides', image: 'onion-rings.jpg', description: 'Rondelles d\'oignons panées' },
-  { id: 7, name: 'Coca-Cola', price: 2.99, category: 'boissons', image: 'coca.jpg', description: 'Coca-Cola bien frais' },
-  { id: 8, name: 'Ice Tea', price: 2.99, category: 'boissons', image: 'ice-tea.jpg', description: 'Ice Tea pêche rafraîchissant' },
-  { id: 9, name: 'Brownie', price: 4.99, category: 'desserts', image: 'brownie.jpg', description: 'Brownie au chocolat avec noix' },
-  { id: 10, name: 'Sundae', price: 5.99, category: 'desserts', image: 'sundae.jpg', description: 'Glace vanille avec sauce chocolat ou caramel' }
-])
+const products = ref([])
+const fetchProducts = async () => {
+  try {
+    const response = await apiService.get('/products')
+    products.value = response.data
+  } catch (error) {
+    console.error('Error fetching products:', error)
+  }
+}
+fetchProducts()
 
 const activeCategory = ref('all')
 
