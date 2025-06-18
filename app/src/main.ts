@@ -10,7 +10,8 @@ if (savedUserName) {
   store.mutations.setUserName(savedUserName)
 }
 
-// Sauvegarde du userName dans localStorage lorsqu'il change
+store.mutations.loadCartFromStorage()
+
 const originalSetUserName = store.mutations.setUserName
 store.mutations.setUserName = (name: string) => {
   originalSetUserName(name)

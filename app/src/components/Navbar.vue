@@ -1,17 +1,14 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import logoUrl from '@/assets/logo.png'
-import { ShoppingCart } from 'lucide-vue-next';
+import { ShoppingCart } from 'lucide-vue-next'
+import store from '../store'
 
 const mobileMenuOpen = ref(false)
-const cartItemCount = ref(3)
+const cartItemCount = computed(() => store.getters.getCartItemCount())
 
 const closeMobileMenu = () => {
   mobileMenuOpen.value = false
-}
-
-const openCart = () => {
-  console.log('Ouvrir le panier')
 }
 </script>
 
@@ -21,16 +18,16 @@ const openCart = () => {
       <div class="flex items-center justify-between h-16">
         <div class="flex items-center">
           <img :src="logoUrl" alt="Logo" class="h-10 w-10 mr-3">
-          <router-link to="/"
-                       class="text-gray-700  px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-                       active-class="text-green-600 bg-green-50">
+          <router-link to="home"
+            class="text-gray-700  px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+            active-class="text-green-600 bg-green-50">
             <span class="font-bold text-xl hover:text-green-600 text-gray-800">Bun Appetit</span>
           </router-link>
         </div>
 
         <div class="hidden md:flex flex-1 justify-center">
           <div class="flex items-baseline space-x-8">
-            <router-link to="/Products"
+            <router-link to="products"
               class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
               active-class="text-green-600 bg-green-50">
               Menu
@@ -40,14 +37,15 @@ const openCart = () => {
 
         <div class="flex items-center space-x-4">
           <div class="relative">
-            <button @click="openCart"
-              class="text-gray-700 hover:text-green-600 p-2 rounded-md transition-colors duration-200">
+            <router-link to="/cart"
+              class="text-gray-700 hover:text-green-600 p-2 rounded-md transition-colors duration-200 block"
+              active-class="text-green-600">
               <ShoppingCart />
               <span v-if="cartItemCount > 0"
                 class="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                 {{ cartItemCount }}
               </span>
-            </button>
+            </router-link>
           </div>
 
           <div class="md:hidden">
@@ -77,11 +75,12 @@ const openCart = () => {
           active-class="text-green-600 bg-green-50">
           Products
         </router-link>
-        <button @click="openCart(); closeMobileMenu()"
-          class="text-gray-700 hover:text-green-600 w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 flex items-center">
-          <ShoppingCart />
-          Panier <span v-if="cartItemCount > 0">({{ cartItemCount }})</span>
-        </button>
+        <router-link to="/cart" @click="closeMobileMenu"
+          class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 flex items-center"
+          active-class="text-green-600 bg-green-50">
+          <ShoppingCart class="mr-2" />
+          Panier <span v-if="cartItemCount > 0" class="ml-1">({{ cartItemCount }})</span>
+        </router-link>
       </div>
     </div>
   </nav>
