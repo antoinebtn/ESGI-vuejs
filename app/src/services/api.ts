@@ -1,5 +1,11 @@
 const API_BASE_URL = 'http://localhost:8000'
 
+interface ApiResponse<T> {
+  data: T
+  success: boolean
+  message?: string
+}
+
 class ApiService {
   private baseURL: string
 
@@ -41,7 +47,7 @@ class ApiService {
     }
   }
 
-  private async get<T>(endpoint: string): Promise<ApiResponse<T>> {
+  public async get<T>(endpoint: string): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, { method: 'GET' })
   }
 }

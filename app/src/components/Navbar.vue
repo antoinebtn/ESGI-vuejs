@@ -19,8 +19,7 @@ const closeMobileMenu = () => {
         <div class="flex items-center">
           <img :src="logoUrl" alt="Logo" class="h-10 w-10 mr-3">
           <router-link :to="{ name: 'home' }"
-            class="text-gray-700  px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-            active-class="text-green-600 bg-green-50">
+            class="text-gray-700  px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
             <span class="font-bold text-xl hover:text-green-600 text-gray-800">Bun Appetit</span>
           </router-link>
         </div>

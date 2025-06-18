@@ -3,39 +3,21 @@ import { computed } from 'vue'
 import { Plus, Minus, Trash2, ShoppingBag } from 'lucide-vue-next'
 import UserNameModal from '../components/UserNameModal.vue'
 import store from '../store'
+import {
+  incrementQuantity,
+  decrementQuantity,
+  removeFromCart
+} from '../utils/product.utils'
+import {
+  clearCart,
+  proceedToCheckout
+} from '../utils/cart.utils'
 
 const hasUserName = computed(() => store.getters.hasUserName())
 const userName = computed(() => store.getters.getUserName())
 const cart = computed(() => store.getters.getCart())
 const cartTotal = computed(() => store.getters.getCartTotal())
 const cartItemCount = computed(() => store.getters.getCartItemCount())
-
-const incrementQuantity = (productId: number) => {
-  const cartItem = cart.value.find((item: any) => item.id === productId)
-  if (cartItem) {
-    store.mutations.updateCartItemQuantity(productId, cartItem.quantity + 1)
-  }
-}
-
-const decrementQuantity = (productId: number) => {
-  const cartItem = cart.value.find((item: any) => item.id === productId)
-  if (cartItem && cartItem.quantity > 1) {
-    store.mutations.updateCartItemQuantity(productId, cartItem.quantity - 1)
-  }
-}
-
-const removeFromCart = (productId: number) => {
-  store.mutations.removeFromCart(productId)
-}
-
-const clearCart = () => {
-  store.mutations.clearCart()
-}
-
-const proceedToCheckout = () => {
-  console.log('Procéder au checkout avec:', cart.value)
-  alert('Fonctionnalité de commande en cours de développement!')
-}
 </script>
 
 <template>
@@ -75,7 +57,8 @@ const proceedToCheckout = () => {
         <div v-for="item in cart" :key="item.id" class="border-b border-gray-200 last:border-b-0 p-6">
           <div class="flex items-center space-x-4">
             <div class="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-              <div class="text-gray-500 text-xs text-center">{{ item.image }}</div>
+              <img v-if="item.image" :src="`data:image/jpeg;base64,${item.image}`" :alt="item.name"
+                class="w-full h-full object-cover" />
             </div>
 
             <div class="flex-1">
@@ -135,7 +118,7 @@ const proceedToCheckout = () => {
             class="flex-1 px-6 py-3 bg-gray-200 text-gray-800 text-center rounded-lg hover:bg-gray-300 transition-colors duration-200">
             Continuer mes achats
           </router-link>
-          <button @click="proceedToCheckout"
+          <button @click="proceedToCheckout(cartTotal)"
             class="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
             Commander ({{ cartTotal.toFixed(2) }} €)
           </button>

@@ -3,11 +3,19 @@ import { ref, computed, onMounted } from 'vue'
 import { Plus, Minus, Trash2 } from 'lucide-vue-next'
 import UserNameModal from '../components/UserNameModal.vue'
 import store from '../store'
-
 import ApiService from '../services/api'
+
+import type { Product } from '../interfaces/product.ts'
 
 const apiService = new ApiService()
 
+import {
+  addToCart,
+  incrementQuantity,
+  decrementQuantity,
+  removeFromCart,
+  getProductQuantityInCart
+} from '../utils/product.utils'
 
 const hasUserName = computed(() => store.getters.hasUserName())
 const userName = computed(() => store.getters.getUserName())
@@ -19,16 +27,22 @@ const categories = ref([
   { id: 5, name: 'Desserts', slug: 'desserts' }
 ])
 
-const products = ref([])
+const products = ref<Product[]>([])
 const fetchProducts = async () => {
   try {
     const response = await apiService.get('/products')
-    products.value = response.data
+    if (response.success) {
+      products.value = (response.data as { data: Product[] }).data
+    }
   } catch (error) {
     console.error('Error fetching products:', error)
   }
+  console.log('Products fetched:', products.value)
 }
-fetchProducts()
+
+onMounted(() => {
+  fetchProducts()
+})
 
 const activeCategory = ref('all')
 
@@ -42,44 +56,6 @@ const filteredProducts = computed(() => {
 const setCategory = (categorySlug: string) => {
   activeCategory.value = categorySlug
 }
-
-const addToCart = (product: any) => {
-  store.mutations.addToCart({
-    id: product.id,
-    name: product.name,
-    price: product.price,
-    category: product.category,
-    image: product.image,
-    description: product.description
-  })
-}
-
-const incrementQuantity = (productId: number) => {
-  const cartItem = store.getters.getCart().find((item: any) => item.id === productId)
-  if (cartItem) {
-    store.mutations.updateCartItemQuantity(productId, cartItem.quantity + 1)
-  }
-}
-
-const decrementQuantity = (productId: number) => {
-  const cartItem = store.getters.getCart().find((item: any) => item.id === productId)
-  if (cartItem) {
-    store.mutations.updateCartItemQuantity(productId, cartItem.quantity - 1)
-  }
-}
-
-const removeFromCart = (productId: number) => {
-  store.mutations.removeFromCart(productId)
-}
-
-const getProductQuantityInCart = (productId: number) => {
-  const cartItem = store.getters.getCart().find((item: any) => item.id === productId)
-  return cartItem ? cartItem.quantity : 0
-}
-
-onMounted(() => {
-  console.log('Products view mounted')
-})
 </script>
 
 <template>
@@ -112,13 +88,16 @@ onMounted(() => {
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <div v-for="product in filteredProducts" :key="product.id"
           class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 flex flex-col justify-around">
-          <div class="h-48 bg-gray-200 flex items-center justify-center">
-            <div class="text-gray-500">Image: {{ product.image }}</div>
+          <div class="h-100 bg-gray-200 flex items-center justify-center">
+            <img v-if="product.image" :src="`data:image/jpeg;base64,${product.image}`" :alt="product.name"
+              class="w-full h-full object-cover" />
+            <div v-else class="text-gray-500">Pas d'image</div>
           </div>
           <div class="p-4">
             <div class="flex justify-between items-start mb-2">
               <h3 class="text-lg font-bold">{{ product.name }}</h3>
-              <span class="text-green-600 font-bold">{{ product.price.toFixed(2) }} €</span>
+              <span class="text-green-600 font-bold">{{ product.price != undefined ? product.price.toFixed(2) :
+                '0.00' }} €</span>
             </div>
             <p class="text-gray-600 text-sm mb-4">{{ product.description }}</p>
 

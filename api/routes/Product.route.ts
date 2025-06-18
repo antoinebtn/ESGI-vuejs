@@ -1,9 +1,64 @@
 import { Router, Request, Response } from 'express';
-import product from '../data/product.data.json'; 
+import * as fs from 'fs';
+import * as path from 'path';
+import productData from '../data/product.data.json'; 
 
 const router = Router();
 
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  category: string;
+  image: string;
+  imageFileName: string;
+  description: string;
+}
+
+const encodeImageToBase64 = (imagePath: string): string | null => {
+  try {
+    if (fs.existsSync(imagePath)) {
+      const imageBuffer = fs.readFileSync(imagePath);
+      return imageBuffer.toString('base64');
+    }
+    return null;
+  } catch (error) {
+    console.error(`Erreur lors de l'encodage de l'image ${imagePath}:`, error);
+    return null;
+  }
+};
+
 router.get('/', (req: Request, res: Response) => {
-  res.json(product);
+  try {
+    const imgDir = path.join(__dirname, '../data/img');
+    
+    const productsWithImages: Product[] = productData.map((product: Product) => {
+      const imageFilePath = path.join(imgDir, product.imageFileName);
+      const base64Image = encodeImageToBase64(imageFilePath);
+      return {
+        ...product,
+        image: base64Image || '', 
+      };
+    })
+
+    // Optionnel: Filtrer les produits qui ont une image valide
+    const productsWithValidImages = productsWithImages.filter(product => product.image !== '');
+    
+    res.status(200).json({
+      success: true,
+      data: productsWithValidImages,
+      total: productsWithValidImages.length,
+      message: 'Produits récupérés avec succès'
+    });
+    
+  } catch (error) {
+    console.error('Erreur lors de la récupération des produits:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur interne du serveur',
+      error: process.env.NODE_ENV === 'development' ? error : undefined
+    });
+  }
 });
+
 export default router;
