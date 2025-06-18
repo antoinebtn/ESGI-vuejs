@@ -1,0 +1,55 @@
+networks:
+  db:
+    driver: bridge
+
+services:
+
+  mariadb:
+    image: mariadb:10.6
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_DATABASE: bdesgi
+    ports:
+      - "3306:3306"
+    networks:
+      - db
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mariadb
+      PMA_PORT: 3306
+    networks:
+      - db
+
+  api:
+    build: ./api
+    container_name: api
+    volumes:
+      - ./api:/usr/src/app
+    ports:
+      - "8001:8000"
+    environment:
+      DATABASE_URL: "mysql://root:root@mariadb:3306/bdesgi"
+    depends_on:
+      - mariadb
+    networks:
+      - db
+
+  app:
+    build: ./app
+    container_name: app
+    volumes:
+      - ./app:/usr/src/app
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    networks:
+      - db
