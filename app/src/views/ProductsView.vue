@@ -15,20 +15,32 @@ import {
   getProductQuantityInCart
 } from '../utils/product.utils'
 
-const categories = ref([
-  { id: 1, name: 'Burgers', slug: 'burgers' },
-  { id: 3, name: 'Sides', slug: 'sides' },
-  { id: 4, name: 'Boissons', slug: 'boissons' },
-  { id: 5, name: 'Desserts', slug: 'desserts' }
-])
+// const categories = ref([
+//   { id: 1, name: 'Burgers', slug: 'burgers' },
+//   { id: 3, name: 'Sides', slug: 'sides' },
+//   { id: 4, name: 'Boissons', slug: 'boissons' },
+//   { id: 5, name: 'Desserts', slug: 'desserts' }
+// ])
 
+const categories = ref<{ id: number, name: string }[]>([])
 const products = ref<Product[]>([])
 const fetchProducts = async () => {
   try {
     const response = await apiService.get('/products')
     if (response.success) {
-      products.value = (response.data as { data: Product[] }).data
+      // Convertir les prix en nombres
+      products.value = (response.data as { data: Product[] }).data.map(product => ({
+        ...product,
+        price: typeof product.price === 'string' ? parseFloat(product.price) : product.price
+      }))
     }
+
+    const response2 = await apiService.get('/productscat')
+    if (response2.success) {
+      categories.value = (response2.data as { data: { id: number, name: string }[] }).data
+    }
+
+    console.log('Categories fetched:', categories.value)
   } catch (error) {
     console.error('Error fetching products:', error)
   }
@@ -39,7 +51,7 @@ onMounted(() => {
   fetchProducts()
 })
 
-const activeCategory = ref('all')
+const activeCategory = ref<number | 'all'>('all')
 
 const filteredProducts = computed(() => {
   if (activeCategory.value === 'all') {
@@ -48,8 +60,8 @@ const filteredProducts = computed(() => {
   return products.value.filter(product => product.category === activeCategory.value)
 })
 
-const setCategory = (categorySlug: string) => {
-  activeCategory.value = categorySlug
+const setCategory = (categoryId: number | 'all') => {
+  activeCategory.value = categoryId
 }
 </script>
 
@@ -58,7 +70,7 @@ const setCategory = (categorySlug: string) => {
     <section class="mb-12">
       <h1 class="text-4xl font-bold text-center mb-6">Nos Produits</h1>
       <p class="text-xl text-center text-gray-600 mb-8">
-          Découvrez notre sélection de burgers et accompagnements
+        Découvrez notre sélection de burgers et accompagnements
       </p>
     </section>
 
@@ -68,9 +80,9 @@ const setCategory = (categorySlug: string) => {
           activeCategory === 'all' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300']">
           Tous les produits
         </button>
-        <button v-for="category in categories" :key="category.id" @click="setCategory(category.slug)"
+        <button v-for="category in categories" :key="category.id" @click="setCategory(category.id)"
           :class="['px-4 py-2 rounded-full transition-colors duration-200',
-            activeCategory === category.slug ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300']">
+            activeCategory === category.id ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300']">
           {{ category.name }}
         </button>
       </div>
@@ -88,8 +100,7 @@ const setCategory = (categorySlug: string) => {
           <div class="p-4">
             <div class="flex justify-between items-start mb-2">
               <h3 class="text-lg font-bold">{{ product.name }}</h3>
-              <span class="text-green-600 font-bold">{{ product.price != undefined ? product.price.toFixed(2) :
-                '0.00' }} €</span>
+              <span class="text-green-600 font-bold">{{ product.price.toFixed(2) }} €</span>
             </div>
             <p class="text-gray-600 text-sm mb-4">{{ product.description }}</p>
 

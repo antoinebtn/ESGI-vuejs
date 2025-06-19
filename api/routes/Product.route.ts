@@ -1,15 +1,16 @@
 import { Router, Request, Response } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
-import productData from '../data/product.data.json'; 
+import { db } from '../service/db.service';
+import { Product as ProductModel } from '../models/product.model';
 
 const router = Router();
 
-interface Product {
+interface ProductWithImage {
   id: number;
   name: string;
   price: number;
-  category: string;
+  category: number;
   image: string;
   imageFileName: string;
   description: string;
@@ -28,11 +29,14 @@ const encodeImageToBase64 = (imagePath: string): string | null => {
   }
 };
 
-router.get('/', (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
   try {
     const imgDir = path.join(__dirname, '../data/img');
+
+    // Récupérer les produits depuis la base de données
+    const productData = await db.query('SELECT * FROM products ORDER BY id ASC') as ProductModel[];
     
-    const productsWithImages: Product[] = productData.map((product: Product) => {
+    const productsWithImages: ProductWithImage[] = productData.map((product: ProductModel) => {
       const imageFilePath = path.join(imgDir, product.imageFileName);
       const base64Image = encodeImageToBase64(imageFilePath);
       return {
@@ -41,7 +45,6 @@ router.get('/', (req: Request, res: Response) => {
       };
     })
 
-    // Optionnel: Filtrer les produits qui ont une image valide
     const productsWithValidImages = productsWithImages.filter(product => product.image !== '');
     
     res.status(200).json({
