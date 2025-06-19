@@ -12,8 +12,6 @@ import {
   proceedToCheckout
 } from '../utils/cart.utils'
 
-
-const userName = computed(() => store.getters.getUserName())
 const cart = computed(() => store.getters.getCart())
 const cartTotal = computed(() => store.getters.getCartTotal())
 const cartItemCount = computed(() => store.getters.getCartItemCount())
@@ -24,7 +22,7 @@ const cartItemCount = computed(() => store.getters.getCartItemCount())
 
     <section class="mb-8">
       <h1 class="text-4xl font-bold text-center mb-6">
-        {{ `Votre panier, ${userName}`}}
+        Votre panier
       </h1>
     </section>
 

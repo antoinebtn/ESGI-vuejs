@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { Plus, Minus, Trash2 } from 'lucide-vue-next'
-import UserNameModal from '../components/UserNameModal.vue'
-import store from '../store'
 import ApiService from '../services/api'
 
 import type { Product } from '../interfaces/product.ts'
@@ -16,9 +14,6 @@ import {
   removeFromCart,
   getProductQuantityInCart
 } from '../utils/product.utils'
-
-const hasUserName = computed(() => store.getters.hasUserName())
-const userName = computed(() => store.getters.getUserName())
 
 const categories = ref([
   { id: 1, name: 'Burgers', slug: 'burgers' },
@@ -60,13 +55,10 @@ const setCategory = (categorySlug: string) => {
 
 <template>
   <main class="container mx-auto px-4 py-8 pt-24">
-    <UserNameModal v-if="!hasUserName" />
-
     <section class="mb-12">
       <h1 class="text-4xl font-bold text-center mb-6">Nos Produits</h1>
       <p class="text-xl text-center text-gray-600 mb-8">
-        {{ hasUserName ? `${userName}, découvrez notre sélection de burgers et accompagnements` :
-          "Découvrez notre sélection de burgers et accompagnements" }}
+          Découvrez notre sélection de burgers et accompagnements
       </p>
     </section>
 

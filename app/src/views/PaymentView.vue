@@ -1,23 +1,18 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { CreditCard, Calendar, Lock } from 'lucide-vue-next'
 import store from '../store'
 import PaymentConfirmationModal from '../components/PaymentConfirmationModal.vue'
-import UserNameModal from '@/components/UserNameModal.vue'
 
-const router = useRouter()
 const cartTotal = computed(() => store.getters.getCartTotal())
 const cart = computed(() => store.getters.getCart())
 
-// État pour la modal de confirmation
 const showConfirmationModal = ref(false)
 const orderData = ref({
   items: [],
   total: 0
 })
 
-// État du formulaire
 const cardNumber = ref('')
 const cardName = ref('')
 const expiryDate = ref('')
@@ -29,7 +24,6 @@ const errors = ref({
   cvv: ''
 })
 
-// Pour fermer la modal de confirmation
 const closeConfirmationModal = () => {
   showConfirmationModal.value = false
 }
@@ -113,12 +107,9 @@ const processPayment = () => {
   }
 }
 
-const hasUserName = computed(() => store.getters.hasUserName())
 </script>
 
 <template>
-  <UserNameModal v-if="!hasUserName" />
-
   <main class="container mx-auto px-4 py-8 pt-24 min-h-screen">
     <section class="mb-8">
       <h1 class="text-4xl font-bold text-center mb-6">Paiement</h1>

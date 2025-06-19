@@ -10,33 +10,50 @@ interface CartItem {
   description: string
 }
 
+interface User {
+  id: number
+  email: string
+  name: string
+}
+
 interface Store {
-  userName: string | null
+  currentUser: User | null
+  isAuthenticated: boolean
+  token: string | null
   cart: CartItem[]
 }
 
 const store = reactive<Store>({
-  userName: null,
+  currentUser: null,
+  isAuthenticated: false,
+  token: null,
   cart: [],
 })
 
 const getters = {
-  hasUserName: () => !!store.userName,
-  getUserName: () => store.userName,
+  isAuthenticated: () => store.isAuthenticated,
+  getCurrentUser: () => store.currentUser,
+  getToken: () => store.token,
   getCart: () => store.cart,
   getCartItemCount: () => store.cart.reduce((total, item) => total + item.quantity, 0),
   getCartTotal: () => store.cart.reduce((total, item) => total + item.price * item.quantity, 0),
 }
 
 const mutations = {
-  setUserName(name: string) {
-    store.userName = name
-    localStorage.setItem('userName', name)
+  setAuth(token: string, user: User) {
+    store.token = token
+    store.currentUser = user
+    store.isAuthenticated = true
+    localStorage.setItem('token', token)
+    localStorage.setItem('user', JSON.stringify(user))
   },
 
-  logoutUser() {
-    store.userName = null
-    localStorage.removeItem('userName')
+  logout() {
+    store.token = null
+    store.currentUser = null
+    store.isAuthenticated = false
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
   },
   addToCart(product: Omit<CartItem, 'quantity'>) {
     const existingItem = store.cart.find((item) => item.id === product.id)
@@ -78,9 +95,18 @@ const mutations = {
   },
 
   loadUserFromStorage() {
-    const savedUserName = localStorage.getItem('userName')
-    if (savedUserName) {
-      store.userName = savedUserName
+    const token = localStorage.getItem('token')
+    const userData = localStorage.getItem('user')
+
+    if (token && userData) {
+      try {
+        store.token = token
+        store.currentUser = JSON.parse(userData)
+        store.isAuthenticated = true
+      } catch (error) {
+        console.error('Erreur lors du chargement des données utilisateur:', error)
+        mutations.logout()
+      }
     }
   },
   clearCart() {

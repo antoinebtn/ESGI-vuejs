@@ -34,7 +34,7 @@ router.beforeEach((to, from, next) => {
   // Vérifier si la route requiert une authentification
   if (to.matched.some(record => record.meta.requiresAuth)) {
     // Vérifier si l'utilisateur est authentifié
-    if (!store.getters.hasUserName()) {
+    if (!store.getters.isAuthenticated()) {
       console.log('Redirection due à l\'authentification requise')
       // Rediriger vers la page d'accueil si non authentifié avec un paramètre de requête
       next({
