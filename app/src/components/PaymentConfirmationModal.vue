@@ -16,10 +16,10 @@ const props = defineProps({
 
 const router = useRouter()
 
-const currentUser = store.getters.getCurrentUser()
-const userName = currentUser ? currentUser.name : 'Client'
+const userName = store.getters.getCurrentUser()?.name
 
 const handleLogout = () => {
+  store.mutations.logout()
   props.onClose()
   router.push('/')
 }

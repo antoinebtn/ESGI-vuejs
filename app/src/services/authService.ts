@@ -30,7 +30,7 @@ export const authService = {
       const response = await apiService.post('/auth/login', data)
 
       if (response.success && response.data.success) {
-        store.mutations.setAuth(response.data.data)
+        store.mutations.setAuth(response.data.data.user)
 
         return {
           success: true,
