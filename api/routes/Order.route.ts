@@ -1,8 +1,12 @@
 import { Router, Request, Response } from 'express';
+import { OrderController } from '../controllers/Order.controller';
 
 const router = Router();
 
-router.get('/confirmation', (req: Request, res: Response) => {
-  res.json({ status: 'success', message: 'Order confirmed' });
-});
+router.post('/', OrderController.createOrder);
+
+router.get('/:id', OrderController.getOrderById);
+
+router.get('/user/:userId', OrderController.getOrdersByUserId);
+
 export default router;

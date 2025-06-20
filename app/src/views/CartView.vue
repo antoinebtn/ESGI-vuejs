@@ -52,11 +52,6 @@ const cartItemCount = computed(() => store.getters.getCartItemCount())
       <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
         <div v-for="item in cart" :key="item.id" class="border-b border-gray-200 last:border-b-0 p-6">
           <div class="flex items-center space-x-4">
-            <div class="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-              <img v-if="item.image" :src="`data:image/jpeg;base64,${item.image}`" :alt="item.name"
-                class="w-full h-full object-cover" />
-            </div>
-
             <div class="flex-1">
               <h3 class="text-lg font-semibold text-gray-800 mb-1">{{ item.name }}</h3>
               <p class="text-sm text-gray-600 mb-2">{{ item.description }}</p>

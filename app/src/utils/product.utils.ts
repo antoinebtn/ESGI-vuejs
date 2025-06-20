@@ -6,7 +6,7 @@ const addToCart = (product: any) => {
     name: product.name,
     price: product.price,
     category: product.category,
-    image: product.image,
+    image: '',
     description: product.description,
   })
 }

@@ -3,12 +3,15 @@ import { computed, ref } from 'vue'
 import { CreditCard, Calendar, Lock } from 'lucide-vue-next'
 import store from '../store'
 import PaymentConfirmationModal from '../components/PaymentConfirmationModal.vue'
+import ApiService from '../services/api'
+
+const apiService = new ApiService()
 
 const cartTotal = computed(() => store.getters.getCartTotal())
 const cart = computed(() => store.getters.getCart())
 
 const showConfirmationModal = ref(false)
-const orderData = ref({
+const orderData = ref<any>({
   items: [],
   total: 0
 })
@@ -89,21 +92,38 @@ const formatExpiryDate = () => {
   }
 }
 
-const processPayment = () => {
+const processPayment = async () => {
   if (validateForm()) {
-    // Préparation des données pour la confirmation
-    orderData.value = {
-      items: [...cart.value],
-      total: cartTotal.value
-    }
+    try {
+      const orderItems = cart.value.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        category: item.category,
+        description: item.description
+      }))
+      const response = await apiService.post('/order', {
+        userId: 1,
+        items: orderItems
+      })
 
-    // Simulation de traitement de paiement
-    setTimeout(() => {
-      // Vider le panier après paiement réussi
-      store.mutations.clearCart()
-      // Afficher la modal de confirmation
-      showConfirmationModal.value = true
-    }, 1500)
+      if (response.success) {
+        orderData.value = {
+          items: [...cart.value],
+          total: cartTotal.value,
+          orderId: (response.data as any)?.data?.orderId || (response.data as any)?.orderId || 'N/A'
+        }
+        store.mutations.clearCart()
+        showConfirmationModal.value = true
+      } else {
+        console.error('Erreur lors de la création de la commande:', response.message)
+        alert('Erreur lors du traitement de la commande. Veuillez réessayer.')
+      }
+    } catch (error) {
+      console.error('Erreur lors du paiement:', error)
+      alert('Erreur lors du traitement du paiement. Veuillez réessayer.')
+    }
   }
 }
 
@@ -122,7 +142,8 @@ const processPayment = () => {
 
         <!-- Détail des articles du panier -->
         <div class="space-y-3 mb-4">
-          <div v-for="item in cart" :key="item.id" class="flex justify-between items-center text-gray-700 pb-2 border-b border-gray-100 last:border-b-0 last:pb-0">
+          <div v-for="item in cart" :key="item.id"
+            class="flex justify-between items-center text-gray-700 pb-2 border-b border-gray-100 last:border-b-0 last:pb-0">
             <div class="flex-1">
               <span class="font-medium">{{ item.name }}</span>
               <span class="text-gray-500 ml-2">x{{ item.quantity }}</span>
@@ -157,14 +178,9 @@ const processPayment = () => {
             <label for="cardNumber" class="block text-sm font-medium text-gray-700 mb-1">Numéro de carte</label>
             <div class="relative">
               <CreditCard class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                id="cardNumber"
-                v-model="cardNumber"
-                @input="formatCardNumber"
-                type="text"
+              <input id="cardNumber" v-model="cardNumber" @input="formatCardNumber" type="text"
                 placeholder="1234 5678 9012 3456"
-                class="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
-              />
+                class="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors" />
             </div>
             <p v-if="errors.cardNumber" class="mt-1 text-sm text-red-600">{{ errors.cardNumber }}</p>
           </div>
@@ -172,13 +188,8 @@ const processPayment = () => {
           <!-- Nom sur la carte -->
           <div>
             <label for="cardName" class="block text-sm font-medium text-gray-700 mb-1">Nom sur la carte</label>
-            <input
-              id="cardName"
-              v-model="cardName"
-              type="text"
-              placeholder="NOM Prénom"
-              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
-            />
+            <input id="cardName" v-model="cardName" type="text" placeholder="NOM Prénom"
+              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors" />
             <p v-if="errors.cardName" class="mt-1 text-sm text-red-600">{{ errors.cardName }}</p>
           </div>
 
@@ -188,14 +199,8 @@ const processPayment = () => {
               <label for="expiryDate" class="block text-sm font-medium text-gray-700 mb-1">Date d'expiration</label>
               <div class="relative">
                 <Calendar class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  id="expiryDate"
-                  v-model="expiryDate"
-                  @input="formatExpiryDate"
-                  type="text"
-                  placeholder="MM/YY"
-                  class="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
-                />
+                <input id="expiryDate" v-model="expiryDate" @input="formatExpiryDate" type="text" placeholder="MM/YY"
+                  class="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors" />
               </div>
               <p v-if="errors.expiryDate" class="mt-1 text-sm text-red-600">{{ errors.expiryDate }}</p>
             </div>
@@ -205,14 +210,8 @@ const processPayment = () => {
               <label for="cvv" class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
               <div class="relative">
                 <Lock class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  id="cvv"
-                  v-model="cvv"
-                  type="text"
-                  maxlength="4"
-                  placeholder="123"
-                  class="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
-                />
+                <input id="cvv" v-model="cvv" type="text" maxlength="4" placeholder="123"
+                  class="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors" />
               </div>
               <p v-if="errors.cvv" class="mt-1 text-sm text-red-600">{{ errors.cvv }}</p>
             </div>
@@ -222,10 +221,8 @@ const processPayment = () => {
             <router-link to="/cart" class="text-green-600 hover:text-green-800 font-medium">
               &larr; Retour au panier
             </router-link>
-            <button
-              type="submit"
-              class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
-            >
+            <button type="submit"
+              class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
               Payer {{ cartTotal.toFixed(2) }} €
             </button>
           </div>
@@ -234,10 +231,6 @@ const processPayment = () => {
     </div>
 
     <!-- Modal de confirmation de paiement -->
-    <PaymentConfirmationModal
-      v-if="showConfirmationModal"
-      :order-data="orderData"
-      :on-close="closeConfirmationModal"
-    />
+    <PaymentConfirmationModal v-if="showConfirmationModal" :order-data="orderData" :on-close="closeConfirmationModal" />
   </main>
 </template>

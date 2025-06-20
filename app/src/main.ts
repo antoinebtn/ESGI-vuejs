@@ -4,7 +4,6 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
-// Charger les données utilisateur et panier depuis le localStorage
 store.mutations.loadUserFromStorage()
 store.mutations.loadCartFromStorage()
 

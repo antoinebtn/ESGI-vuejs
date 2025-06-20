@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
 import logoUrl from '@/assets/logo.png'
-import { ShoppingCart, LogIn, LogOut, UserCircle } from 'lucide-vue-next'
+import { ShoppingCart, LogIn, LogOut, UserCircle, Package } from 'lucide-vue-next'
 import store from '../store'
 import LoginModal from './auth/LoginModal.vue'
 import RegisterModal from './auth/RegisterModal.vue'
@@ -72,6 +72,11 @@ const handleAuthSuccess = () => {
               active-class="text-green-600 bg-green-50">
               Menu
             </router-link>
+            <router-link v-if="isAuthenticated" :to="{ name: 'orders' }"
+              class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+              active-class="text-green-600 bg-green-50">
+              Mes commandes
+            </router-link>
           </div>
         </div>
 
@@ -92,19 +97,22 @@ const handleAuthSuccess = () => {
           <div class="hidden md:flex items-center space-x-2">
             <template v-if="isAuthenticated">
               <div class="flex items-center">
-                <UserCircle class="text-green-600 mr-1" size="16" />
+                <UserCircle class="text-green-600 mr-1" :size="16" />
                 <span class="text-sm mr-2">{{ currentUser?.name }}</span>
-                <button @click="logout" class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-md transition-colors duration-200">
-                  <LogOut size="20" />
+                <button @click="logout"
+                  class="flex items-center text-gray-700 hover:text-green-600 p-2 rounded-md transition-colors duration-200">
+                  <LogOut :size="20" />
                 </button>
               </div>
             </template>
             <template v-else>
-              <button @click="openLoginModal" class="text-gray-700 hover:text-green-600 px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 flex items-center">
-                <LogIn class="mr-1" size="16" />
+              <button @click="openLoginModal"
+                class="text-gray-700 hover:text-green-600 px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 flex items-center">
+                <LogIn class="mr-1" :size="16" />
                 Connexion
               </button>
-              <button @click="openRegisterModal" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200">
+              <button @click="openRegisterModal"
+                class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200">
                 Inscription
               </button>
             </template>
@@ -135,7 +143,13 @@ const handleAuthSuccess = () => {
         <router-link :to="{ name: 'products' }" @click="closeMobileMenu"
           class="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
           active-class="text-green-600 bg-green-50">
-          Products
+          Menu
+        </router-link>
+        <router-link v-if="isAuthenticated" :to="{ name: 'orders' }" @click="closeMobileMenu"
+          class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 flex items-center"
+          active-class="text-green-600 bg-green-50">
+          <Package class="mr-2" />
+          Mes commandes
         </router-link>
         <router-link :to="{ name: 'cart' }" @click="closeMobileMenu"
           class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 flex items-center"
@@ -174,16 +188,8 @@ const handleAuthSuccess = () => {
     </div>
   </nav>
 
-  <LoginModal
-    v-if="showLoginModal"
-    @close="closeModals"
-    @switch-to-register="switchToRegister"
-    @success="handleAuthSuccess"
-  />
-  <RegisterModal
-    v-if="showRegisterModal"
-    @close="closeModals"
-    @switch-to-login="switchToLogin"
-    @success="handleAuthSuccess"
-  />
+  <LoginModal v-if="showLoginModal" @close="closeModals" @switch-to-register="switchToRegister"
+    @success="handleAuthSuccess" />
+  <RegisterModal v-if="showRegisterModal" @close="closeModals" @switch-to-login="switchToLogin"
+    @success="handleAuthSuccess" />
 </template>

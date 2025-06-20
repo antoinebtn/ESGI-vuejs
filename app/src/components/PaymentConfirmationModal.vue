@@ -16,10 +16,10 @@ const props = defineProps({
 
 const router = useRouter()
 
-const userName = store.getters.getUserName()
+const currentUser = store.getters.getCurrentUser()
+const userName = currentUser ? currentUser.name : 'Client'
 
 const handleLogout = () => {
-  store.mutations.logoutUser()
   props.onClose()
   router.push('/')
 }
@@ -27,6 +27,11 @@ const handleLogout = () => {
 const handleContinue = () => {
   props.onClose()
   router.push('/')
+}
+
+const handleViewOrders = () => {
+  props.onClose()
+  router.push('/orders')
 }
 </script>
 
@@ -60,17 +65,18 @@ const handleContinue = () => {
       </p>
 
       <div class="flex flex-col space-y-3">
-        <button
-          @click="handleContinue"
-          class="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
-        >
+        <button @click="handleViewOrders"
+          class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
+          Voir mes commandes
+        </button>
+
+        <button @click="handleContinue"
+          class="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
           Retour à l'accueil
         </button>
 
-        <button
-          @click="handleLogout"
-          class="w-full px-6 py-3 border border-red-500 text-red-500 rounded-lg hover:bg-red-50 transition-colors duration-200 flex items-center justify-center"
-        >
+        <button @click="handleLogout"
+          class="w-full px-6 py-3 border border-red-500 text-red-500 rounded-lg hover:bg-red-50 transition-colors duration-200 flex items-center justify-center">
           <LogOut class="w-4 h-4 mr-2" />
           Se déconnecter
         </button>

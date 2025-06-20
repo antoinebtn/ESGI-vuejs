@@ -27,29 +27,3 @@ services:
       PMA_PORT: 3306
     networks:
       - db
-
-  api:
-    build: ./api
-    container_name: api
-    volumes:
-      - ./api:/usr/src/app
-    ports:
-      - "8001:8000"
-    environment:
-      DATABASE_URL: "mysql://root:root@mariadb:3306/bdesgi"
-    depends_on:
-      - mariadb
-    networks:
-      - db
-
-  app:
-    build: ./app
-    container_name: app
-    volumes:
-      - ./app:/usr/src/app
-    ports:
-      - "5173:5173"
-    depends_on:
-      - api
-    networks:
-      - db
