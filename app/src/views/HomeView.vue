@@ -1,5 +1,12 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import logoUrl from '@/assets/logo.png'
+
+const clickCount = ref(0)
+
+const handleLogoClick = () => {
+  clickCount.value++
+}
 </script>
 
 <template>
@@ -19,7 +26,15 @@ import logoUrl from '@/assets/logo.png'
           viande, végétarien ou amateur de saveurs audacieuses, nous avons le burger parfait pour vous.
         </p>
       </div>
-      <img :src="logoUrl" alt="Logo Bun Appetit" class="w-128 h-128 object-contain" />
+      <div class="flex flex-col items-center">
+        <img :src="logoUrl" alt="Logo Bun Appetit"
+          class="w-128 h-128 object-contain cursor-pointer transition-transform duration-150 hover:scale-105 active:scale-95 select-none"
+          @click="handleLogoClick" draggable="false" />
+        <div v-if="clickCount > 0" class="mt-4 text-center">
+          <p class="text-2xl font-bold text-green-600">🍔 {{ clickCount }} clics</p>
+          <p class="text-sm text-gray-500">Continuez à cliquer pour plus de burgers !</p>
+        </div>
+      </div>
     </div>
   </main>
 </template>
