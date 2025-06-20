@@ -34,16 +34,14 @@ export const register = async (req: Request, res: Response) => {
       [name, email, hashedPassword]
     );
 
-    const responseData = JSON.parse(JSON.stringify(result, (key, value) =>
-        typeof value === 'bigint' ? Number(value) : value
-    ));
-
-
-
     return res.status(201).json({
       success: true,
       message: 'Utilisateur créé avec succès',
-      data: responseData
+      data: {
+        'id' : Number(result.insertId),
+        'name' : name,
+        'email' : email
+      }
     });
 
   } catch (error) {
