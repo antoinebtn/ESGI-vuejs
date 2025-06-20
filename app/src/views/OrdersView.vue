@@ -55,12 +55,15 @@ const formatDate = (dateString: string | object) => {
     return 'Date non disponible'
   }
 
-  return date.toLocaleDateString('fr-FR', {
+  const utcPlus2Date = new Date(date.getTime() + 2 * 60 * 60 * 1000)
+
+  return utcPlus2Date.toLocaleDateString('fr-FR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    timeZone: 'Europe/Paris'
   })
 }
 

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import store from '../store'
+import { useToast } from 'vue-toastification'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -37,12 +38,14 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  // Vérifier si la route requiert une authentification
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    // Vérifier si l'utilisateur est authentifié
     if (!store.getters.isAuthenticated()) {
-      console.log("Redirection due à l'authentification requise")
-      // Rediriger vers la page d'accueil si non authentifié avec un paramètre de requête
+      // Afficher un toast d'erreur
+      const toast = useToast()
+      toast.error('Vous devez être connecté pour accéder à cette page', {
+        timeout: 4000,
+      })
+
       next({
         path: '/',
         query: { authRequired: 'true' },

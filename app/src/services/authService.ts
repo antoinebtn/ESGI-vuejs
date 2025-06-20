@@ -34,19 +34,19 @@ export const authService = {
 
         return {
           success: true,
-          user: response.data
+          user: response.data,
         }
       } else {
         return {
           success: false,
-          message: response.data.message || 'Erreur de connexion'
+          message: response.data.message || 'Erreur de connexion',
         }
       }
     } catch (error) {
       console.error('Erreur lors de la connexion:', error)
       return {
         success: false,
-        message: 'Erreur de connexion au serveur'
+        message: 'Erreur de connexion au serveur',
       }
     }
   },
@@ -61,19 +61,19 @@ export const authService = {
 
         return {
           success: true,
-          user: response.data.data.user
+          user: response.data.data.user,
         }
       } else {
         return {
           success: false,
-          message: response.data.message || 'Erreur lors de l\'inscription'
+          message: response.data.message || "Erreur lors de l'inscription",
         }
       }
     } catch (error) {
-      console.error('Erreur lors de l\'inscription:', error)
+      console.error("Erreur lors de l'inscription:", error)
       return {
         success: false,
-        message: 'Erreur de connexion au serveur'
+        message: 'Erreur de connexion au serveur',
       }
     }
   },
@@ -81,6 +81,7 @@ export const authService = {
   async logout() {
     try {
       await apiService.post('/auth/logout', {})
+      window.location.href = '/'
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error)
     } finally {
