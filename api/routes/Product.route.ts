@@ -33,7 +33,6 @@ router.get('/', async (req: Request, res: Response) => {
   try {
     const imgDir = path.join(__dirname, '../data/img');
 
-    // Récupérer les produits depuis la base de données
     const productData = await db.query('SELECT * FROM products ORDER BY id ASC') as ProductModel[];
     
     const productsWithImages: ProductWithImage[] = productData.map((product: ProductModel) => {

@@ -34,18 +34,21 @@ This project is a food ordering website built with Nuxt.js. It allows users to b
 ## ⚙ ️Setup
 
 ### Installation
-#### With docker 
+#### Database configuration
+##### With docker 
 ```bash
 git clone
 docker compose up -d 
 ```
+- Open localhost:8080
+- import dump /api/migration/esgi_bun_appetit.sql in the base esgi_bun_appetit
 
-#### Without docker
-```bash
-git clone
+##### Without docker
+- Create a base esgi_bun_appetit in your DBMS
+- Import dump /api/migration/esgi_bun_appetit.sql in the base esgi_bun_appetit
 
-cd ESGI-vuejs
-
+#### Launch Project 
+```
 cd /app
 npm install
 npm run dev
