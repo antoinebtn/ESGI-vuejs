@@ -9,6 +9,7 @@ const apiService = new ApiService()
 
 const cartTotal = computed(() => store.getters.getCartTotal())
 const cart = computed(() => store.getters.getCart())
+const currentUser = store.getters.getCurrentUser()
 
 const showConfirmationModal = ref(false)
 const orderData = ref<any>({
@@ -104,7 +105,7 @@ const processPayment = async () => {
         description: item.description
       }))
       const response = await apiService.post('/order', {
-        userId: 1,
+        userId: currentUser?.id || null,
         items: orderItems
       })
 

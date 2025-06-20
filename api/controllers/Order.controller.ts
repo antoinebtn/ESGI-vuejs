@@ -12,7 +12,17 @@ export class OrderController {
     if (typeof obj === 'object') {
       const converted: any = Array.isArray(obj) ? [] : {};
       for (const key in obj) {
-        converted[key] = OrderController.convertBigIntToNumber(obj[key]);
+        if (obj.hasOwnProperty(key)) {
+          const value = obj[key];
+          if (typeof value === 'bigint') {
+            converted[key] = Number(value);
+          } else if (key === 'total' && (value === null || value === undefined)) {
+            // S'assurer que total a toujours une valeur numérique
+            converted[key] = 0;
+          } else {
+            converted[key] = OrderController.convertBigIntToNumber(value);
+          }
+        }
       }
       return converted;
     }
@@ -105,7 +115,9 @@ export class OrderController {
       const { userId } = req.params;
       
       const orders = await db.query(`
-        SELECT o.*, COUNT(oi.id) as itemCount, SUM(oi.price * oi.quantity) as total
+        SELECT o.*, 
+               COUNT(oi.id) as itemCount, 
+               COALESCE(SUM(oi.price * oi.quantity), 0) as total
         FROM orders o
         LEFT JOIN order_items oi ON o.id = oi.orderId
         WHERE o.userId = ?

@@ -5,8 +5,8 @@ const router = Router();
 
 router.post('/', OrderController.createOrder);
 
-router.get('/:id', OrderController.getOrderById);
-
 router.get('/user/:userId', OrderController.getOrdersByUserId);
+
+router.get('/:id', OrderController.getOrderById);
 
 export default router;
