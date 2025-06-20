@@ -1,20 +1,6 @@
 import { reactive, readonly } from 'vue'
-
-interface CartItem {
-  id: number
-  name: string
-  price: number
-  quantity: number
-  category: string
-  image: string
-  description: string
-}
-
-interface User {
-  id: number
-  email: string
-  name: string
-}
+import type { CartItem } from '../interfaces/cardItem'
+import type { User } from '../interfaces/user'
 
 interface Store {
   currentUser: User | null
@@ -48,6 +34,7 @@ const mutations = {
     store.isAuthenticated = false
     localStorage.removeItem('user')
   },
+
   addToCart(product: Omit<CartItem, 'quantity'>) {
     const existingItem = store.cart.find((item) => item.id === product.id)
     if (existingItem) {
@@ -57,6 +44,7 @@ const mutations = {
     }
     localStorage.setItem('cart', JSON.stringify(store.cart))
   },
+
   removeFromCart(productId: number) {
     const index = store.cart.findIndex((item) => item.id === productId)
     if (index > -1) {
@@ -64,6 +52,7 @@ const mutations = {
       localStorage.setItem('cart', JSON.stringify(store.cart))
     }
   },
+
   updateCartItemQuantity(productId: number, quantity: number) {
     const item = store.cart.find((item) => item.id === productId)
     if (item) {
@@ -75,6 +64,7 @@ const mutations = {
       }
     }
   },
+
   loadCartFromStorage() {
     const savedCart = localStorage.getItem('cart')
     if (savedCart) {
@@ -100,6 +90,7 @@ const mutations = {
       }
     }
   },
+
   clearCart() {
     store.cart = []
     localStorage.removeItem('cart')

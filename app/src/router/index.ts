@@ -48,11 +48,9 @@ router.beforeEach((to, from, next) => {
         query: { authRequired: 'true' },
       })
     } else {
-      // Continuer si authentifié
       next()
     }
   } else {
-    // Pour les routes qui ne nécessitent pas d'authentification
     next()
   }
 })

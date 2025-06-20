@@ -158,7 +158,6 @@ const handleAuthSuccess = () => {
           Panier <span v-if="cartItemCount > 0" class="ml-1">({{ cartItemCount }})</span>
         </router-link>
 
-        <!-- Boutons d'authentification pour mobile -->
         <div class="border-t border-gray-200 my-2 pt-2">
           <template v-if="isAuthenticated">
             <div class="flex items-center px-3 py-2 text-green-600">

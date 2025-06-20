@@ -2,15 +2,8 @@
 import { computed } from 'vue'
 import { Plus, Minus, Trash2, ShoppingBag } from 'lucide-vue-next'
 import store from '../store'
-import {
-  incrementQuantity,
-  decrementQuantity,
-  removeFromCart
-} from '../utils/product.utils'
-import {
-  clearCart,
-  proceedToCheckout
-} from '../utils/cart.utils'
+import { incrementQuantity, decrementQuantity, removeFromCart } from '../utils/product.utils'
+import { clearCart, proceedToCheckout } from '../utils/cart.utils'
 
 const cart = computed(() => store.getters.getCart())
 const cartTotal = computed(() => store.getters.getCartTotal())
