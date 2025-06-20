@@ -11,13 +11,14 @@ interface OrderItem {
   productName: string
   productImage: string
   quantity: number
-  price: number
+  price: number | string
 }
 
 interface Order {
   id: number
   userId: number
-  createdAt: string
+  created_at: string
+  updated_at?: string
   total: number
   itemCount: number
   items: OrderItem[]
@@ -41,8 +42,19 @@ const toggleOrderExpansion = (orderId: number) => {
   }
 }
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString: string | object) => {
+  // Si c'est un objet vide ou null/undefined, retourner une date par défaut
+  if (!dateString || typeof dateString === 'object') {
+    return 'Date non disponible'
+  }
+
   const date = new Date(dateString)
+
+  // Vérifier si la date est valide
+  if (isNaN(date.getTime())) {
+    return 'Date non disponible'
+  }
+
   return date.toLocaleDateString('fr-FR', {
     year: 'numeric',
     month: 'long',
@@ -60,10 +72,20 @@ const loadOrders = async () => {
 
   try {
     loading.value = true
-    const response = await api.get<Order[]>(`/order/user/${currentUser.id}`)
-
+    const response = await api.get<{ data: Order[] }>(`/order/user/${currentUser.id}`)
+    console.log('Orders response:', response)
     if (response.success) {
-      orders.value = response.data
+      orders.value = response.data.data.map(order => ({
+        ...order,
+        total: typeof order.total === 'string' ? parseFloat(order.total) : order.total,
+        itemCount: order.items.length,
+        items: order.items.map(item => ({
+          ...item,
+          price: typeof item.price === 'string' ? parseFloat(item.price) : item.price
+        }))
+      }))
+
+      console.log('Orders loaded:', orders.value)
     } else {
       error.value = response.message || 'Erreur lors du chargement des commandes'
     }
@@ -89,12 +111,10 @@ onMounted(() => {
       </p>
     </section>
 
-    <!-- Loading State -->
     <div v-if="loading" class="flex justify-center items-center py-12">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
     </div>
 
-    <!-- Error State -->
     <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
       <p class="text-red-600 mb-4">{{ error }}</p>
       <button @click="loadOrders" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
@@ -102,7 +122,6 @@ onMounted(() => {
       </button>
     </div>
 
-    <!-- Empty State -->
     <div v-else-if="orders.length === 0" class="bg-white rounded-lg shadow-sm border p-12 text-center">
       <Package class="w-16 h-16 text-gray-400 mx-auto mb-4" />
       <h3 class="text-xl font-semibold text-gray-900 mb-2">Aucune commande</h3>
@@ -113,11 +132,9 @@ onMounted(() => {
       </button>
     </div>
 
-    <!-- Orders List -->
     <div v-else class="space-y-4">
       <div v-for="order in orders" :key="order.id" class="bg-white rounded-lg shadow-sm border overflow-hidden">
 
-        <!-- Order Header -->
         <div class="p-6 border-b border-gray-200">
           <div class="flex justify-between items-start mb-4">
             <div>
@@ -126,7 +143,7 @@ onMounted(() => {
               </h3>
               <div class="flex items-center text-sm text-gray-600 mt-1">
                 <Clock class="w-4 h-4 mr-1" />
-                {{ formatDate(order.createdAt) }}
+                {{ formatDate(order.created_at) }}
               </div>
             </div>
             <div class="text-right">
@@ -139,7 +156,6 @@ onMounted(() => {
             </div>
           </div>
 
-          <!-- Toggle Button -->
           <button @click="toggleOrderExpansion(order.id)"
             class="flex items-center justify-between w-full p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
             <span class="text-sm font-medium text-gray-700">
@@ -150,37 +166,28 @@ onMounted(() => {
           </button>
         </div>
 
-        <!-- Order Details (Expanded) -->
         <div v-if="expandedOrders.has(order.id)" class="p-6">
           <h4 class="font-semibold text-gray-900 mb-4">Articles commandés</h4>
           <div class="space-y-4">
             <div v-for="item in order.items" :key="item.id"
               class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
 
-              <!-- Product Image -->
-              <div class="flex-shrink-0">
-                <img :src="`http://localhost:8000/images/${item.productImage}`" :alt="item.productName"
-                  class="w-16 h-16 object-cover rounded-lg"
-                  @error="(e) => (e.target as HTMLImageElement).src = '/placeholder-food.jpg'" />
-              </div>
-
-              <!-- Product Info -->
               <div class="flex-1">
                 <h5 class="font-semibold text-gray-900">{{ item.productName }}</h5>
                 <p class="text-sm text-gray-600">Quantité: {{ item.quantity }}</p>
-                <p class="text-sm text-gray-600">Prix unitaire: {{ (item.price || 0).toFixed(2) }} €</p>
+                <p class="text-sm text-gray-600">Prix unitaire: {{ (typeof item.price === 'string' ?
+                  parseFloat(item.price) : item.price || 0).toFixed(2) }} €</p>
               </div>
 
-              <!-- Item Total -->
               <div class="text-right">
                 <div class="font-semibold text-gray-900">
-                  {{ ((item.price || 0) * (item.quantity || 0)).toFixed(2) }} €
+                  {{ ((typeof item.price === 'string' ? parseFloat(item.price) : item.price || 0) * (item.quantity ||
+                    0)).toFixed(2) }} €
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Order Total -->
           <div class="mt-6 pt-4 border-t border-gray-200">
             <div class="flex justify-between items-center">
               <span class="text-lg font-semibold text-gray-900">Total de la commande</span>
@@ -191,7 +198,6 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Back Button -->
     <div class="mt-8 text-center">
       <button @click="router.push('/')"
         class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">

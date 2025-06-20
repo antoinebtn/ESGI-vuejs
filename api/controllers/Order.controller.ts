@@ -9,6 +9,7 @@ export class OrderController {
   private static convertBigIntToNumber(obj: any): any {
     if (obj === null || obj === undefined) return obj;
     if (typeof obj === 'bigint') return Number(obj);
+    if (obj instanceof Date) return obj.toISOString(); // Convertir les dates en ISO string
     if (typeof obj === 'object') {
       const converted: any = Array.isArray(obj) ? [] : {};
       for (const key in obj) {
@@ -19,6 +20,9 @@ export class OrderController {
           } else if (key === 'total' && (value === null || value === undefined)) {
             // S'assurer que total a toujours une valeur numérique
             converted[key] = 0;
+          } else if ((key === 'created_at' || key === 'updated_at') && value instanceof Date) {
+            // Convertir les dates en chaînes ISO
+            converted[key] = value.toISOString();
           } else {
             converted[key] = OrderController.convertBigIntToNumber(value);
           }
