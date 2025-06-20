@@ -86,6 +86,7 @@ export const authService = {
       console.error('Erreur lors de la déconnexion:', error)
     } finally {
       store.mutations.logout()
+      store.mutations.clearCart()
     }
   },
 }
