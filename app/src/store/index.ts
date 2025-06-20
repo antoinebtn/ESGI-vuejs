@@ -19,40 +19,33 @@ interface User {
 interface Store {
   currentUser: User | null
   isAuthenticated: boolean
-  token: string | null
   cart: CartItem[]
 }
 
 const store = reactive<Store>({
   currentUser: null,
   isAuthenticated: false,
-  token: null,
   cart: [],
 })
 
 const getters = {
   isAuthenticated: () => store.isAuthenticated,
   getCurrentUser: () => store.currentUser,
-  getToken: () => store.token,
   getCart: () => store.cart,
   getCartItemCount: () => store.cart.reduce((total, item) => total + item.quantity, 0),
   getCartTotal: () => store.cart.reduce((total, item) => total + item.price * item.quantity, 0),
 }
 
 const mutations = {
-  setAuth(token: string, user: User) {
-    store.token = token
+  setAuth(user: User) {
     store.currentUser = user
     store.isAuthenticated = true
-    localStorage.setItem('token', token)
     localStorage.setItem('user', JSON.stringify(user))
   },
 
   logout() {
-    store.token = null
     store.currentUser = null
     store.isAuthenticated = false
-    localStorage.removeItem('token')
     localStorage.removeItem('user')
   },
   addToCart(product: Omit<CartItem, 'quantity'>) {
@@ -95,12 +88,10 @@ const mutations = {
   },
 
   loadUserFromStorage() {
-    const token = localStorage.getItem('token')
     const userData = localStorage.getItem('user')
 
-    if (token && userData) {
+    if (userData) {
       try {
-        store.token = token
         store.currentUser = JSON.parse(userData)
         store.isAuthenticated = true
       } catch (error) {

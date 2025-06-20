@@ -1,4 +1,7 @@
 import store from '../store'
+import ApiService from './api'
+
+const apiService = new ApiService()
 
 interface LoginData {
   email: string
@@ -14,7 +17,6 @@ interface RegisterData {
 interface AuthResponse {
   success: boolean
   message?: string
-  token?: string
   user?: {
     id: number
     name: string
@@ -22,82 +24,66 @@ interface AuthResponse {
   }
 }
 
-const mockUsers = [
-  {
-    id: 1,
-    name: 'Test User',
-    email: 'test@example.com',
-    password: 'password123'
-  }
-]
-
 export const authService = {
   async login(data: LoginData): Promise<AuthResponse> {
-    const user = mockUsers.find(u => u.email === data.email && u.password === data.password)
+    try {
+      const response = await apiService.post('/auth/login', data)
 
-    if (!user) {
+      if (response.success && response.data.success) {
+        store.mutations.setAuth(response.data.data.user)
+
+        return {
+          success: true,
+          user: response.data.data.user
+        }
+      } else {
+        return {
+          success: false,
+          message: response.data.message || 'Erreur de connexion'
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de la connexion:', error)
       return {
         success: false,
-        message: 'Email ou mot de passe incorrect'
-      }
-    }
-
-    const token = 'mock-jwt-token'
-
-    store.mutations.setAuth(token, {
-      id: user.id,
-      name: user.name,
-      email: user.email
-    })
-
-    return {
-      success: true,
-      token,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email
+        message: 'Erreur de connexion au serveur'
       }
     }
   },
 
   async register(data: RegisterData): Promise<AuthResponse> {
-    if (mockUsers.some(u => u.email === data.email)) {
+    try {
+      const response = await apiService.post('/auth/register', data)
+
+      if (response.success && response.data.success) {
+        store.mutations.setAuth(response.data.data.user)
+
+        return {
+          success: true,
+          user: response.data.data.user
+        }
+      } else {
+        return {
+          success: false,
+          message: response.data.message || 'Erreur lors de l\'inscription'
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'inscription:', error)
       return {
         success: false,
-        message: 'Cet email est déjà utilisé'
-      }
-    }
-
-    const newUser = {
-      id: mockUsers.length + 1,
-      name: data.name,
-      email: data.email,
-      password: data.password
-    }
-
-    mockUsers.push(newUser)
-
-    const token = 'mock-jwt-token'
-
-    store.mutations.setAuth(token, {
-      id: newUser.id,
-      name: newUser.name,
-      email: newUser.email
-    })
-
-    return {
-      success: true,
-      token,
-      user: {
-        id: newUser.id,
-        name: newUser.name,
-        email: newUser.email
+        message: 'Erreur de connexion au serveur'
       }
     }
   },
 
-  logout() {
-    store.mutations.logout()
+  async logout() {
+    try {
+      await apiService.post('/auth/logout', {})
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error)
+    } finally {
+      store.mutations.logout()
+    }
   },
 }

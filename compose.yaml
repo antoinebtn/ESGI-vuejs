@@ -11,7 +11,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin
-      MYSQL_DATABASE: bdesgi
+      MYSQL_DATABASE: esgi_bun_appetit
     ports:
       - "3306:3306"
     networks:

@@ -18,8 +18,8 @@ const closeMobileMenu = () => {
   mobileMenuOpen.value = false
 }
 
-const logout = () => {
-  authService.logout()
+const logout = async () => {
+  await authService.logout()
   closeMobileMenu()
 }
 
